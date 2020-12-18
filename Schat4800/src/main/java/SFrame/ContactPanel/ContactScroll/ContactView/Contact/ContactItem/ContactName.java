@@ -1,4 +1,8 @@
 package SFrame.ContactPanel.ContactScroll.ContactView.Contact.ContactItem;
+/**
+ * hiển thị mã phòng
+ *
+ */
 
 import javax.swing.*;
 import java.awt.*;

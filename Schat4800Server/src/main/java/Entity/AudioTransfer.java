@@ -1,4 +1,8 @@
 package Entity;
+/**
+ * gói này chứa chuỗi liên tục các byte của âm thanh sẽ gửi
+ * dùng cho cuộc gọi
+ */
 
 import java.io.Serializable;
 

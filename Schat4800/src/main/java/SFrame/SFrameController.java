@@ -1,4 +1,8 @@
 package SFrame;
+/**
+ * lớp điều khiển tổng thể'
+ * chứa id máy , id phòng nhắn tin hiện tại
+ */
 
 import CallFrame.CallFrame;
 import Connect.*;
@@ -10,8 +14,8 @@ import java.awt.event.*;
 public class SFrameController {
     public static boolean inCall=false;
     SFrameController sFrameController;
-    public static int id=15;
-    public static int roomId=0;
+    public static int id=15;   // id máy của mình
+    public static int roomId=0; // id phòng đang nhắn tin
     public SFrame sFrame;
     Connect connect;
     ReadThread readThread;
@@ -28,6 +32,10 @@ public class SFrameController {
         readThread.start();
 
     }
+
+    /**
+     * sự kiện gửi file
+     */
     AbstractAction chooseFile=new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -41,7 +49,9 @@ public class SFrameController {
             }
         }
     };
-
+    /**
+     * sự kiện gửi tin nhắn
+     */
     KeyAdapter keyAdapter=new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
@@ -55,6 +65,9 @@ public class SFrameController {
         }
     };
     CallFrame callFrame;
+    /**
+     * sự kiện bắt đầu cuộc gọi
+     */
     AbstractAction callStart=new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -65,6 +78,9 @@ public class SFrameController {
             callFrame.callPanel.cancel.addActionListener(callCancel);
         }
     };
+    /**
+     * sự kiện kết thức cuojc gọi
+     */
     AbstractAction callCancel=new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {

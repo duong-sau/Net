@@ -1,4 +1,11 @@
 package SFrame.MessagePanel.MessageScroll.MessageCardLayout.MessageView.MessageContent;
+/**
+ * khung nội dung tin nhắn
+ * màu đỏ là tin nhắn của bạn
+ * màu đen là tin nhắn của mình
+ * @file là tin nhắn ở dạng file, cliclk vào đó file sẽ tải về
+ * chưa làm thông báo file tải thành công
+ */
 
 import Entity.Message;
 import SFrame.MessagePanel.MessageScroll.MessageCardLayout.MessageView.MessageView;

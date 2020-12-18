@@ -1,4 +1,8 @@
 package Entity;
+/**
+ * gói này đại diện cho một lời mời cuộc gọi
+ * phần này cũng chưa viết
+ */
 
 import java.io.Serializable;
 

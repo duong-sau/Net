@@ -1,4 +1,7 @@
 package Connect;
+/**
+ * lớp này nhận gói tin nhắn có kèm âm thanh và phát ra loa
+ */
 
 import Entity.AudioTransfer;
 import Entity.Message;
@@ -9,6 +12,11 @@ public class CallReceiveThread {
     Connect connect;
     SourceDataLine sourceDataLine;
     DataLine.Info dataLineInfo;
+
+    /**
+     * chỗ này khởi tạo loa
+     * @param connect
+     */
     public CallReceiveThread(Connect connect) {
         this.connect = connect;
         try {
@@ -21,6 +29,11 @@ public class CallReceiveThread {
             e.printStackTrace();
         }
     }
+
+    /**
+     * chõ này phát âm thanh
+     * @param message
+     */
     public void playAudio(Message message){
             try {
                 AudioTransfer audioTransfer = (AudioTransfer) message.objects.get(0);

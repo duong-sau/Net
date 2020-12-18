@@ -1,4 +1,8 @@
 package Entity;
+/**
+ * gói này dùng để server gửi các phòng đã tạo trước đó đến client
+ *
+ */
 
 import java.io.Serializable;
 import java.util.ArrayList;

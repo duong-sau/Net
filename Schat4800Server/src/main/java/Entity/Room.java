@@ -1,4 +1,7 @@
 package Entity;
+/**
+ * gói này đại diện cho 1 phòng chat
+ */
 
 import java.io.Serializable;
 import java.util.ArrayList;

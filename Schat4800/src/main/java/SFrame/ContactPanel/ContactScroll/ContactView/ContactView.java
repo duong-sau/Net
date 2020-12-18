@@ -1,4 +1,8 @@
 package SFrame.ContactPanel.ContactScroll.ContactView;
+/**
+ * danh sách các phòng
+ */
+
 import SFrame.ContactPanel.ContactScroll.ContactView.Contact.Contact;
 import SFrame.MessagePanel.MessagePanel;
 import SFrame.SFrameController;

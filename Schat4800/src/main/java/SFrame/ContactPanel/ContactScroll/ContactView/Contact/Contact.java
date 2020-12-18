@@ -1,4 +1,8 @@
 package SFrame.ContactPanel.ContactScroll.ContactView.Contact;
+/**
+ * hiển thị mã phòng và ảnh đại diện phòng
+ * ảnh đại diện phòng chưa làm
+ */
 
 import SFrame.ContactPanel.ContactScroll.ContactView.Contact.ContactItem.ContactName;
 import javax.swing.*;

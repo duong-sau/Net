@@ -1,4 +1,8 @@
 package CallFrame;
+/**
+ * màn hình cuộc gọi
+ * chưa xử lý sự kiện
+ */
 
 import SFrame.SFrameController;
 import javax.swing.*;

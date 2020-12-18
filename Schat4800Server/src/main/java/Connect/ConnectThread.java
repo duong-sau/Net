@@ -1,4 +1,7 @@
 package Connect;
+/**
+ * gói này nhận thông điệp từ client
+ */
 
 import Controller.RouteController;
 import Entity.*;
@@ -24,6 +27,9 @@ public class ConnectThread extends Thread{
     }
 
     @Override
+    /**
+     * hàm này liên tục chờ nhận tin nhắn từ client rồi đem đi phân loại
+     */
     public void run() {
         try {
             objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
@@ -42,6 +48,11 @@ public class ConnectThread extends Thread{
             e.printStackTrace();
         }
     }
+
+    /**
+     * hàm này tạo gọi sau khi nhận được lời chào từ client
+     * nó gửi danh sách các phòng tới client
+     */
     public void handshake(){
         try{
             handshake=(Handshake)objectInputStream.readObject();
@@ -62,6 +73,12 @@ public class ConnectThread extends Thread{
             e.printStackTrace();
         }
     }
+
+    /**
+     * hàm này đọc tin nhắn
+     * gần như khong có chức năng gì chỉ là viết cho cái lúc đọc tin nhắn gọn hơn thôi
+     * @return
+     */
     public Message readMessage(){
         try {
             Message message=(Message) objectInputStream.readObject();
@@ -73,6 +90,12 @@ public class ConnectThread extends Thread{
         }
         return null;
     }
+
+    /**
+     * hàm này gửi 1 tin nhắn tời client
+     * cũng như hàm đọc tin nhắn chỉ là viết cho gọn thôi
+     * @param message
+     */
     public void writeMessage(Message message){
 
             try {
@@ -83,6 +106,10 @@ public class ConnectThread extends Thread{
                 e.printStackTrace();
             }
         }
+
+    /**
+     * hàm này xử lý kho có một máy kết nối lại
+     */
     public void reconnect(){
         ArrayList<Integer> roomIds=sqlConnect.getRoom(handshake.id);
         System.out.println("reconnect");
@@ -90,6 +117,11 @@ public class ConnectThread extends Thread{
             getMessage(roomId);
         }
     }
+
+    /**
+     * hàm này lấy các tin nhắn trong phòng để gửi cho các máy kết nối lại thu được tin nhắn đã gửi trước đó
+     * @param roomId
+     */
     public void getMessage(int roomId){
         ArrayList<Message> messages;
         messages = sqlConnect.getMessage(roomId);
@@ -102,6 +134,12 @@ public class ConnectThread extends Thread{
         }
 
     }
+
+    /**
+     * hàm này dùng để phân loại tin nhắn nhận được từ client
+     *
+     * @param message
+     */
     public void classify(Message message){
         if(message==null){}
         else if(message.command==0) {
@@ -126,6 +164,11 @@ public class ConnectThread extends Thread{
             routingCall(message);
         }
     }
+
+    /**
+     * hàm đọc file từ client gửi cho lưu vào bộ nhớ của server, lúc nào có client tải sẽ đem ra gửi đi
+     * @param message
+     */
     public void readFile(Message message){
         //xong
         try {
@@ -142,6 +185,11 @@ public class ConnectThread extends Thread{
         }
 
     }
+
+    /**
+     * hàm này gửi file đến client khi có yêu cầu tải file
+     * @param message
+     */
     public void writeFile(Message message){
         //xong
          try {
@@ -149,7 +197,9 @@ public class ConnectThread extends Thread{
              File file=new File(message.message);
              FileInputStream fileInputStream=new FileInputStream(file);
              fileTransfer.name=file.getName();
-             fileTransfer.content=fileInputStream.readAllBytes();
+             byte[] bytes = new byte[fileInputStream.available()];
+             fileInputStream.read(bytes);
+             fileTransfer.content=bytes;
              fileInputStream.close();
              Message message1=new Message(message.sourceId,"file from server",2);
              message1.objects.add(fileTransfer);
@@ -158,6 +208,12 @@ public class ConnectThread extends Thread{
             e.printStackTrace();
         }
     }
+
+    /**
+     * hàm này tạo phòng chat
+     * tôi chưa làm xong
+     * @param message
+     */
     public void createRoom(Message message){
         //xong
         try {
@@ -169,10 +225,20 @@ public class ConnectThread extends Thread{
         }
 
     }
+
+    /**
+     * hàm này tôi dự tính để ngắt kết nối nhưng hình như không có ý nghĩa lắm
+     */
     public void destructor(){
         routeController.connectThreads.remove(this);
     }
 
+    /**
+     * hàm này gửi nội yêu cầu cuộc gọi tới client
+     * bên client chưa xử lý tin nhắn có command=6 nên không có hiện tượng gì đâu
+     * ai đó viết hộ tôi phần xử lý bên client
+     * @param message
+     */
     public void requestCall(Message message){
         RequestCall requestCall=new RequestCall(String.valueOf(message.sourceId),String.valueOf(message.sourceId));
         Message request=new Message(message.sourceId,message.destinationId,"request call", 6);
@@ -182,6 +248,11 @@ public class ConnectThread extends Thread{
     public void responseCall(Message message){
 
     }
+
+    /**
+     * hàm này chuyển tiếp tin nhắn có đính kèm nội dung âm thanh
+     * @param message
+     */
     public void routingCall(Message message){
         try {
             routeController.callRouting(message);

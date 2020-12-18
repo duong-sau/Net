@@ -1,4 +1,7 @@
 package SFrame.MessagePanel;
+/**
+ * khung tin nhắn hiển thị lên màn hình
+ */
 
 import Connect.Connect;
 import SFrame.MessagePanel.MessageInput.MessageInput;

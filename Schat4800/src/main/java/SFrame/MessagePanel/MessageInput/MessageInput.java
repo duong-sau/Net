@@ -1,4 +1,7 @@
 package SFrame.MessagePanel.MessageInput;
+/**
+ * khung nhập các nội dung tin nhắn
+ */
 
 import SFrame.MessagePanel.MessageInput.MessageInputItem.CallInput;
 import SFrame.MessagePanel.MessageInput.MessageInputItem.MessageInputFile;

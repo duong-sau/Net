@@ -1,4 +1,7 @@
 package SFrame.ContactPanel.ContactScroll;
+/**
+ * cũng là danh sác các phòng nhưng hỗ trợ con lăn để kéo xuống xen thêm
+ */
 
 import SFrame.ContactPanel.ContactScroll.ContactView.ContactView;
 import SFrame.MessagePanel.MessagePanel;

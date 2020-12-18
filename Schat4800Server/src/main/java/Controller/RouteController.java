@@ -1,4 +1,7 @@
 package Controller;
+/**
+ * lớp này nhiệm vụ chuyển tiếp tin nhắn từ máy này qua máy khác
+ */
 
 import Connect.ConnectThread;
 import Entity.Message;
@@ -16,6 +19,11 @@ public class RouteController {
     public void add(ConnectThread connectThread){
         connectThreads.add(connectThread);
     }
+
+    /**
+     * chuyển tin nhắn
+     * @param message tin nhắn
+     */
     public void routing(Message message){
         sqlConnect.saveMessage(message);
         ArrayList<Integer> userIds=sqlConnect.getUser(new Room(message.destinationId));
@@ -27,6 +35,11 @@ public class RouteController {
             }
         }
     }
+
+    /**
+     * chuyển cuộc gọi
+     * @param message tin nhắn bên trong có đính kèm gói âm thanh
+     */
     public void callRouting(Message message){
         ArrayList<Integer> userIds=sqlConnect.getUser(new Room(message.destinationId));
         for (Integer userId:userIds) {

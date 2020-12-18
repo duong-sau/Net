@@ -1,6 +1,8 @@
 package SQL;
+/**
+ * đây là lớp kết nối tới csdl
+ */
 
-import Entity.Handshake;
 import Entity.Message;
 import Entity.Room;
 
@@ -8,11 +10,15 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class SQLConnect {
-    private static String url = "jdbc:mysql://sql12.freesqldatabase.com/sql12376804";
-    private static String userName = "sql12376804";
-    private static String password = "qjyEbYU93I";
+    private static String url = "jdbc:mysql://remotemysql.com/CQfhezArNu";
+    private static String userName = "CQfhezArNu";
+    private static String password = "BvbPZxslEU";
     Connection connection;
     Statement statement;
+
+    /**
+     * tạo kết nối đến csdl
+     */
     public SQLConnect(){
         try {
             connection = DriverManager.getConnection(url,userName,password);
@@ -21,6 +27,11 @@ public class SQLConnect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * lưu tin nhắn vào cở sở dữ liệu
+     * @param message
+     */
     public void saveMessage(Message message){
         System.out.println("lưu tin nhắn vào cơ sở dữ liệu");
         int id=0;
@@ -41,6 +52,10 @@ public class SQLConnect {
         }
 
     }
+
+    /**
+     * chỗ này khởi tạo lại cơ sở dữ liệu từ đầu
+     */
     public void reset(){
         try {
             statement.execute("DROP TABLE Message");
@@ -53,6 +68,12 @@ public class SQLConnect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * lấy nội dung tin nhắn từ csdl
+     * @param destinationId
+     * @return
+     */
     public ArrayList<Message> getMessage( int destinationId){
         ArrayList<Message> messages=new ArrayList<>();
         String query="SELECT message,sourceId,file FROM Message WHERE destinationId=" +destinationId;
@@ -70,6 +91,16 @@ public class SQLConnect {
         }
         return messages;
     }
+
+    /**
+     * tạo phòng chat
+     * nếu muốn 2 người nhắn tin hcho nhau thì tạo phòng chỉ có 2 người
+     * ở bên client tôi chưa viết hàm này
+     * chỉ gọi khi reset csdl thôi
+     * @param userIds danh sách các người dùng được thêm vào phòng
+     * @param sourceId id người tạo phòng(cũng sẽ được thêm vào phòng nên không cần có trong danh sách ở trên
+     *
+     */
     public void createRoom(ArrayList<Integer> userIds, int sourceId){
             try {
                 String rID="";
@@ -89,6 +120,13 @@ public class SQLConnect {
                 e.printStackTrace();
             }
     }
+
+    /**
+     * lấy danh sách các phòng
+     * dùng khi người dùng kết nối lại để lấy các phòng chat mà người ta đã chat trước đó
+     * @param destinationId id của người lấy danh sách phòng
+     * @return
+     */
     public ArrayList<Integer> getRoom(int destinationId){
         try{
             ArrayList<Integer> roomIds=new ArrayList<>();
@@ -103,6 +141,13 @@ public class SQLConnect {
         }
         return null;
     }
+
+    /**
+     * lấy danh sách thành viên trong 1 phòng
+     * khi gửi tin nhắn thì client chỉ thông báo mã phòng, server lấy danh sách các thành viên để chuyển tiếp tin nhắn
+     * @param room
+     * @return
+     */
     public ArrayList<Integer> getUser(Room room){
         try {
             ArrayList<Integer> userIds=new ArrayList<>();

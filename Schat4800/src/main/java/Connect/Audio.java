@@ -1,4 +1,7 @@
 package Connect;
+/**
+ * hàm này định nghĩa chuẩn âm thanh
+ */
 
 import javax.sound.sampled.AudioFormat;
 

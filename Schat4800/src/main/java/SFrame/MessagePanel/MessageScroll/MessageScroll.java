@@ -1,5 +1,7 @@
 package SFrame.MessagePanel.MessageScroll;
-
+/**
+ * khung tin nhắn có hỗ trợ con lăn
+ */
 
 import Connect.Connect;
 import SFrame.MessagePanel.MessageScroll.MessageCardLayout.MessageCardLayout;

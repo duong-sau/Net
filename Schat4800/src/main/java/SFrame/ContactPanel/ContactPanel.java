@@ -1,4 +1,8 @@
 package SFrame.ContactPanel;
+/**
+ * cũng là danh sách các phòng
+ * dùng để hiển thị lên màn hình
+ */
 
 import SFrame.ContactPanel.ContactInput.ContactInput;
 import SFrame.ContactPanel.ContactScroll.ContactScroll;

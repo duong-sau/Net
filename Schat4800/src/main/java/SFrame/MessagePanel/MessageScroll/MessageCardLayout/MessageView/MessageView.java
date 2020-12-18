@@ -1,4 +1,7 @@
 package SFrame.MessagePanel.MessageScroll.MessageCardLayout.MessageView;
+/**
+ * danh sách các tin nhắn
+ */
 
 import Connect.Connect;
 import Entity.Message;

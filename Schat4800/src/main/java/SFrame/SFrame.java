@@ -1,4 +1,7 @@
 package SFrame;
+/**
+ * mà hình chính
+ */
 
 import Connect.Connect;
 import SFrame.ContactPanel.ContactPanel;
@@ -19,11 +22,10 @@ public class SFrame extends JFrame{
         contactPanel=new ContactPanel(messagePanel);
         sPanel.add(contactPanel);
         sPanel.add(messagePanel);
-
-
+        this.setSize(960,1080);
     }
     public void set(){
-        this.setSize(960,1080);
+
         this.setVisible(true);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         sPanel.setSize(960,800);

@@ -1,4 +1,7 @@
 package SFrame.ContactPanel.ContactInput;
+/**
+ * chứa thanh và nút tìm kiếm người dùng
+ */
 
 import SFrame.ContactPanel.ContactInput.ContactInputItem.ContactInputAdd;
 import SFrame.ContactPanel.ContactInput.ContactInputItem.ContactInputText;
@@ -7,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ContactInput extends JPanel {
-    ContactInputText contactInputText;
+    public ContactInputText contactInputText;
     ContactInputAdd contactInputAdd;
     public ContactInput() {
         set();
@@ -15,6 +18,7 @@ public class ContactInput extends JPanel {
         contactInputAdd=new ContactInputAdd();
         add(contactInputText);
         add(contactInputAdd);
+
     }
     private void set(){
         setBackground(new Color(232, 214, 214,255));

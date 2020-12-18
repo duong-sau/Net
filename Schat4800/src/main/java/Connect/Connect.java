@@ -1,4 +1,9 @@
 package Connect;
+/**
+ * tạo kết nối tới server  và xử lý gửi và nhận tin nhắn
+ * ip 127.0.0.1
+ * cổng 5000
+ */
 
 import Entity.*;
 import SFrame.SFrameController;
@@ -32,6 +37,10 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * gửi lời chào đến server, khai báo id máy
+     */
     public void handshake(){
         try {
             Handshake handshake=new Handshake(SFrameController.id);
@@ -42,6 +51,11 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * đọc tin nhắn
+     * @return
+     */
     synchronized public Message readMessage(){
         try {
             Message message=(Message) objectInputStream.readObject();
@@ -52,6 +66,11 @@ public class Connect {
         }
         return null;
     }
+
+    /**
+     * phân loại tin nhắn
+     * @param message
+     */
     synchronized public void classify(Message message){
         System.out.println("phan loai tin nhan");
          if(message.command==2){
@@ -72,16 +91,28 @@ public class Connect {
             System.out.println(" has call request");
          }
     }
+
+    /**
+     * hàm này hiển thị một tin nhắn mới lên màn hình
+     * @param message
+     */
     public void render(Message message){
         sFrameController.sFrame.messagePanel.messageScroll.messageCardLayout.getMessageView(String.valueOf(message.destinationId)).addContent(message.message,message.sourceId,message.file);
         sFrameController.sFrame.messagePanel.messageScroll.repaint();
 
     }
+
+    /**
+     * đọc file từ server và lưu vào máy
+     * @param file
+     */
     public void writeFile(File file){
         //xong
         try {
             FileInputStream fileInputStream=new FileInputStream(file);
-            byte[] bytes=fileInputStream.readAllBytes();
+
+            byte[] bytes=new byte[fileInputStream.available()];
+                    fileInputStream.read(bytes);
             FileTransfer fileTransfer=new FileTransfer();
             fileTransfer.name=file.getName();
             fileTransfer.content=bytes;
@@ -94,6 +125,11 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * gửi file tớ server
+     * @param message
+     */
     public void readFile(Message message){
         //xong
         try {
@@ -106,6 +142,12 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * tạo phòng chat
+     * chưa làm xong
+     * @param id
+     */
     public void createRoom(int id){
         //xong
         try {
@@ -120,6 +162,12 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    /**
+     * thêm danh sách phòng chat nhận được từ server sau khi bắt tay
+     * hiển thị danh sác này lên màn hình
+     * @param message
+     */
     public void getContact(Message message){
         //xong
     RoomHandshake roomHandshake=(RoomHandshake)message.objects.get(0);
@@ -128,11 +176,21 @@ public class Connect {
            sFrameController.sFrame.contactPanel.contactScroll.contactView.addContact(userIds);
         }
     }
+
+    /**
+     * gửi yêu cầu cuộc gọi tới server
+     * bên server hình như chưa xử lý phần này
+     */
     public void call(){
         Message message=new Message(SFrameController.roomId,"call start",5);
         writeMessage(message);
         callSentThread=new CallSentThread(this);
     }
+
+    /**
+     * kết thúc cuộc gọi
+     * bên server cũng chưa xử lý phần này
+     */
     public void callCancel(){
         Message message=new Message(SFrameController.roomId,"call cancel",8 );
         writeMessage(message);

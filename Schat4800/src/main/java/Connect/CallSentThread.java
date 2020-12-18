@@ -1,5 +1,7 @@
 package Connect;
-
+/**
+ * luồng này liên tực gửi tin nhắn đính kèm âm thanh
+ */
 
 import Entity.AudioTransfer;
 import Entity.Message;
@@ -14,6 +16,11 @@ public class CallSentThread extends Thread{
     TargetDataLine targetDataLine;
     DataLine.Info dataLineInfo;
     boolean running=true;
+
+    /**
+     * khởi tạo micro
+     * @param connect
+     */
     public CallSentThread(Connect connect) {
         this.connect = connect;
         try {
@@ -31,7 +38,12 @@ public class CallSentThread extends Thread{
         }
     }
 
+
     @Override
+    /**
+     * gửi tin nhắn đi
+     * tin nhắn gửi đi có command=7
+     */
     public void run() {
         try {
             System.out.println("call start");

@@ -1,4 +1,7 @@
 package SFrame.MessagePanel.MessageInput.MessageInputItem;
+/**
+ * nút gửi file
+ */
 
 import javax.swing.*;
 

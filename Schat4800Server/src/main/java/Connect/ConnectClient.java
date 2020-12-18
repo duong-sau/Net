@@ -1,10 +1,13 @@
 package Connect;
+/**
+ * lớp này chờ để tạo kết nối tới client
+ * phục vụ đa luồng
+ * cổng 5000
+ * ip 127.0.0.1
+ */
 
 import Controller.RouteController;
 import SQL.SQLConnect;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 

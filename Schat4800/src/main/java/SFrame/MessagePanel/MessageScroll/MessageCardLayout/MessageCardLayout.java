@@ -1,4 +1,8 @@
 package SFrame.MessagePanel.MessageScroll.MessageCardLayout;
+/**
+ * dùng để thay đổi khung tin nhắn khi click vào phòng chat khác
+ */
+
 import Connect.Connect;
 import SFrame.MessagePanel.MessageScroll.MessageCardLayout.MessageView.MessageView;
 import SFrame.SFrame;
