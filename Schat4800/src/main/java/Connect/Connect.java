@@ -20,7 +20,7 @@ public class Connect {
     public Connect(SFrameController sFrameController) {
         try {
             this.sFrameController=sFrameController;
-            socket=new Socket("127.0.0.1",5000);
+            socket=new Socket("127.0.0.1",5010);
             objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
             objectInputStream=new ObjectInputStream(socket.getInputStream());
             handshake();

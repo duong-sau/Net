@@ -20,7 +20,7 @@ public class ConnectClient {
         sqlConnect=new SQLConnect();
         routeController=new RouteController(sqlConnect);
         try {
-            socket = new ServerSocket(5000);
+            socket = new ServerSocket(5010);
             while (true) {
                 System.out.println("bắt đầu");
                 clientSocket = socket.accept();
