@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class ContactInput extends JPanel {
     public ContactInputText contactInputText;
-    ContactInputAdd contactInputAdd;
+    public ContactInputAdd contactInputAdd;
     public ContactInput() {
         set();
         contactInputText=new ContactInputText();
@@ -21,7 +21,7 @@ public class ContactInput extends JPanel {
 
     }
     private void set(){
-        setBackground(new Color(232, 214, 214,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBackground(new Color(88, 151, 255,255));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
     }
 }

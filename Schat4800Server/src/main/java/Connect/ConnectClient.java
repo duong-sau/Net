@@ -6,21 +6,27 @@ package Connect;
  * ip 127.0.0.1
  */
 
+import AudioServer.Connect.AudioClient;
+import AudioServer.Connect.AudioThread;
 import Controller.RouteController;
 import SQL.SQLConnect;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ConnectClient {
+    public static int port = 5009;
+    public static int portAudio = 5011;
     SQLConnect sqlConnect=new SQLConnect();
     ServerSocket socket;
     Socket clientSocket;
     RouteController routeController;
+    AudioClient audioClient;
     public ConnectClient() {
         sqlConnect=new SQLConnect();
         routeController=new RouteController(sqlConnect);
+        audioClient=new AudioClient(routeController, sqlConnect);
         try {
-            socket = new ServerSocket(5010);
+            socket = new ServerSocket(port,100);
             while (true) {
                 System.out.println("bắt đầu");
                 clientSocket = socket.accept();

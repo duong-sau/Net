@@ -7,20 +7,23 @@ package Connect;
 
 import Entity.*;
 import SFrame.SFrameController;
+
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 public class Connect {
+    int manifestLength = 1048576;
+    FileConnect fileConnect;
+    public AudioConnect audioConnect;
     public Socket socket;
     public ObjectOutputStream objectOutputStream;
     public ObjectInputStream objectInputStream;
     SFrameController sFrameController;
-    CallSentThread callSentThread;
-    public CallReceiveThread callReceiveThread;
     public Connect(SFrameController sFrameController) {
         try {
             this.sFrameController=sFrameController;
-            socket=new Socket("127.0.0.1",5010);
+            socket=new Socket(SFrameController.ip, SFrameController.port);
             objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
             objectInputStream=new ObjectInputStream(socket.getInputStream());
             handshake();
@@ -45,6 +48,7 @@ public class Connect {
         try {
             Handshake handshake=new Handshake(SFrameController.id);
             objectOutputStream.writeObject(handshake);
+            audioConnect = new AudioConnect();
 
         }
         catch (Exception e){
@@ -83,12 +87,24 @@ public class Connect {
             System.out.println("get rôm");
             getContact(message);
          }
-        else  if (message.command==7&&SFrameController.inCall){
-            System.out.println(message.objects+"-------------------------------------------------------------------------");
-             callReceiveThread.playAudio(message);
-         }
         else if(message.command==6){
+            callRequest(message);
             System.out.println(" has call request");
+         }
+        else if(message.command==1){
+            messageOke();
+         }else if(message.command==11){
+             addContact(message);
+         }
+        else if(message.command==12){
+            roomInvalid();
+        }else if(message.command==201){
+            fileConnect= manifest(message);
+         }else if(message.command==1210){
+            System.out.println("1111");
+             personIn(message);
+         }else if(message.command==1201){
+             personOut(message);
          }
     }
 
@@ -99,7 +115,9 @@ public class Connect {
     public void render(Message message){
         sFrameController.sFrame.messagePanel.messageScroll.messageCardLayout.getMessageView(String.valueOf(message.destinationId)).addContent(message.message,message.sourceId,message.file);
         sFrameController.sFrame.messagePanel.messageScroll.repaint();
-
+       sFrameController.sFrame.invalidate();
+       sFrameController.sFrame.validate();
+        sFrameController.sFrame.repaint();
     }
 
     /**
@@ -107,18 +125,31 @@ public class Connect {
      * @param file
      */
     public void writeFile(File file){
-        //xong
         try {
-            FileInputStream fileInputStream=new FileInputStream(file);
-
-            byte[] bytes=new byte[fileInputStream.available()];
+        FileInputStream fileInputStream=new FileInputStream(file);
+        Manifest manifest = new Manifest(1+fileInputStream.available()/manifestLength,file.getName());
+        Message message1 = new Message(SFrameController.roomId, file.getName(), 209);
+        message1.objects.add(manifest);
+        writeMessage(message1);
+            for (int i = 0; i < manifest.length; i++) {
+                FileTransfer fileTransfer=new FileTransfer();
+                fileTransfer.id = i+1;
+                fileTransfer.name=file.getName();
+                if(fileInputStream.available()<manifestLength) {
+                    byte[] bytes = new byte[fileInputStream.available()];
                     fileInputStream.read(bytes);
-            FileTransfer fileTransfer=new FileTransfer();
-            fileTransfer.name=file.getName();
-            fileTransfer.content=bytes;
-            Message message=new Message(SFrameController.roomId,"file",1);
-            message.objects.add(fileTransfer);
-            writeMessage(message);
+                    fileTransfer.content = bytes;
+                }
+                else {
+                    byte[] bytes = new byte[manifestLength];
+                    fileInputStream.read(bytes);
+                    fileTransfer.content = bytes;
+                }
+                Message send=new Message(0,"file from server",210);
+                send.objects.add(fileTransfer);
+                writeMessage(send);
+            }
+            fileInputStream.close();
             System.out.println("da gui file");
 
         } catch (Exception e) {
@@ -134,35 +165,21 @@ public class Connect {
         //xong
         try {
             FileTransfer fileTransfer=(FileTransfer)message.objects.get(0);
-            File file=new File(fileTransfer.name);
-            FileOutputStream fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(fileTransfer.content);
-            fileOutputStream.close();
+            boolean finish = fileConnect.add(fileTransfer);
+            sFrameController.sFrame.messagePanel.fileOke();
+            if (finish){
+                fileConnect = null;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    /**
-     * tạo phòng chat
-     * chưa làm xong
-     * @param id
-     */
-    public void createRoom(int id){
-        //xong
-        try {
-            ArrayList<Integer> userIds=new ArrayList<>();
-            userIds.add(id);
-            Room room=new Room(userIds);
-            Message message=new Message(0,"create room",3);
-            message.objects.add(room);
-            writeMessage(message);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    public FileConnect manifest(Message message){
+        Manifest manifest = (Manifest) message.objects.get(0);
+        FileConnect fileConnect = new FileConnect(manifest.name, manifest.length);
+        return fileConnect;
     }
-
     /**
      * thêm danh sách phòng chat nhận được từ server sau khi bắt tay
      * hiển thị danh sác này lên màn hình
@@ -176,25 +193,37 @@ public class Connect {
            sFrameController.sFrame.contactPanel.contactScroll.contactView.addContact(userIds);
         }
     }
-
-    /**
-     * gửi yêu cầu cuộc gọi tới server
-     * bên server hình như chưa xử lý phần này
-     */
-    public void call(){
-        Message message=new Message(SFrameController.roomId,"call start",5);
-        writeMessage(message);
-        callSentThread=new CallSentThread(this);
+    public void addContact(Message message){
+        Room room = (Room) message.objects.get(0);
+        String userIds=String.valueOf(room.id);
+        sFrameController.sFrame.contactPanel.contactScroll.contactView.addContact(userIds);
+        sFrameController.sFrame.messagePanel.createRoom();
     }
 
-    /**
-     * kết thúc cuộc gọi
-     * bên server cũng chưa xử lý phần này
-     */
-    public void callCancel(){
-        Message message=new Message(SFrameController.roomId,"call cancel",8 );
+    public void roomInvalid(){
+        sFrameController.sFrame.messagePanel.roomNotOk();
+    }
+    public void messageOke(){
+        sFrameController.sFrame.messagePanel.MessageOk();
+    }
+    public void callRequest(Message message){
+        System.out.println("call");
+        sFrameController.sFrame.messagePanel.messageInput.callInput.allow();
+        sFrameController.removeStart();
+    }
+    public void personOut(Message message){
+        SFrameController.hasPerson--;
+    }
+    public void personIn(Message message){
+        SFrameController.hasPerson++;
+    }
+    public void accept(){
+        Message message = new Message(SFrameController.roomId,"accept call", 1220);
         writeMessage(message);
-        callSentThread.dispose();
+    }
+    public void out(){
+        Message message = new Message(SFrameController.roomId,"accept call", 1202);
+        writeMessage(message);
     }
 
-  }
+}

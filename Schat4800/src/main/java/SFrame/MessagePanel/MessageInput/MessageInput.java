@@ -20,12 +20,17 @@ public class MessageInput extends JPanel {
         messageInputText=new MessageInputText();
         callInput=new CallInput();
         add(messageInputText);
-        add(messageInputFile);
-        add(callInput);
+//        add(messageInputFile);
+//        add(callInput);
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new GridLayout(2,1));
+        jPanel.add(messageInputFile);
+        jPanel.add(callInput);
+        add(jPanel);
     }
     private void set(){
-        setBackground(new Color(62, 8, 8,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBackground(new Color(255, 255, 255,255));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
         this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
         setPreferredSize(new Dimension(300,100));
     }

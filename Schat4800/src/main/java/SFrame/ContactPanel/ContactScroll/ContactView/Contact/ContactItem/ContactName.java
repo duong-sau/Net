@@ -16,6 +16,6 @@ public class ContactName extends JLabel {
     public void set(){
         setText(name);
         System.out.println("set name"+name);
-        setBorder(BorderFactory.createLineBorder(new Color(255,25,255,255)));
+        //setBorder(BorderFactory.createLineBorder(new Color(255,25,255,255)));
     }
 }

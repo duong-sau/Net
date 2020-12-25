@@ -24,7 +24,7 @@ public class MessageCardLayout extends JPanel {
 
     private void set(){
         setBackground(new Color(196, 164, 97,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
         setPreferredSize(new Dimension(300,900));
         setLayout(cardLayout);
     }

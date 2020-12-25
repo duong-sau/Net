@@ -20,7 +20,7 @@ public class MessageScroll extends JScrollPane {
     }
     private void set(){
         setBackground(new Color(250, 175, 19,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
         setPreferredSize(new Dimension(300,900));
     }
 

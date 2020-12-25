@@ -26,14 +26,28 @@ public class MessageContent extends JLabel {
         this.sourceId = sourceId;
         this.file = file;
         set();
-        if(sourceId== SFrameController.id){
+        if(sourceId==SFrameController.id){
             mine=true;
-            this.setText("<html>"+sourceId+":     <font color='red'>"+content+"</font></html>");setAlignmentX(JLabel.WEST);
+            this.setText("<html>"+sourceId+":     <font color='black'>"+content+"</font></html>");
+            setAlignmentX(JLabel.WEST);
         }
-        if (file){
-            this.setText("@file"+content);
+        if (file&&sourceId==SFrameController.id){
+            mine = true;
+            this.setText("<html>"+sourceId+":     <font color='red'>"+"@FILE: "+content+"</font></html>");
+            setAlignmentX(JLabel.WEST);
             addMouseListener(mouseAdapter);
         }
+        if (file&&sourceId!=SFrameController.id){
+            mine = true;
+            this.setText("<html>"+sourceId+":     <font color='red'>"+"@FILE: "+content+"</font></html>");
+            addMouseListener(mouseAdapter);
+        }
+        if(sourceId!=SFrameController.id&&!file){
+            mine = false;
+            this.setText("<html>"+sourceId+":     <font color='black'>"+" "+content+"</font></html>");
+
+        }
+
     }
 
     private void set(){

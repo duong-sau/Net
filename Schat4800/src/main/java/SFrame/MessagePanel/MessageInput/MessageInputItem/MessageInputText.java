@@ -11,7 +11,7 @@ public class MessageInputText extends JTextField {
     set();
     }
     private void set(){
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
         this.setColumns(30);
         setPreferredSize(new Dimension(150,100));
     }

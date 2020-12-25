@@ -31,7 +31,7 @@ public class MessageView extends JPanel {
     }
     private void set(){
         setBackground(new Color(255, 255, 255,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255,255)));
         setPreferredSize(new Dimension(500,900));
         setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
     }

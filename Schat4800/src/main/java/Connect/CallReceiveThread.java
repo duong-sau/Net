@@ -8,23 +8,19 @@ import Entity.Message;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
-public class CallReceiveThread {
-    Connect connect;
+public class CallReceiveThread extends Thread {
+    AudioConnect audioConnect;
     SourceDataLine sourceDataLine;
     DataLine.Info dataLineInfo;
 
-    /**
-     * chỗ này khởi tạo loa
-     * @param connect
-     */
-    public CallReceiveThread(Connect connect) {
-        this.connect = connect;
+    public CallReceiveThread(AudioConnect audioConnect) {
+        this.audioConnect = audioConnect;
         try {
-
             dataLineInfo = new DataLine.Info(SourceDataLine.class, Audio.audioFormat);
             sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
             sourceDataLine.open(Audio.audioFormat);
             sourceDataLine.start();
+            start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,13 +32,33 @@ public class CallReceiveThread {
      */
     public void playAudio(Message message){
             try {
-                AudioTransfer audioTransfer = (AudioTransfer) message.objects.get(0);
-                sourceDataLine.write(audioTransfer.bytes, 0, audioTransfer.bytes.length);
-            }catch (Exception e){
+                if(message.objects.size()==0){System.out.println("aaaaaaaaaaaaaaaaa");}
+                else {
+                    //System.out.println("bbbbbbbbbbbb");
+                    AudioTransfer audioTransfer = (AudioTransfer) message.objects.get(0);
+                    //if(audioTransfer.time< System.currentTimeMillis()+30000){
+
+                    //}
+                    //else {
+                        sourceDataLine.write(audioTransfer.bytes, 0, audioTransfer.bytes.length);
+                   // }
+                }
+                }catch (Exception e){
                 e.printStackTrace();
             }
     }
 
-    public void dispose() {
+    @Override
+    public void run() {
+        while (true) {
+            Message message = audioConnect.readMessage();
+            playAudio(message);
+            //System.out.println("mess");
+        }
     }
+
+    public void dispose() {
+        this.stop();
+    }
+
 }

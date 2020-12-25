@@ -22,7 +22,7 @@ public class SFrame extends JFrame{
         contactPanel=new ContactPanel(messagePanel);
         sPanel.add(contactPanel);
         sPanel.add(messagePanel);
-        this.setSize(960,1080);
+        this.setSize(970,850);
     }
     public void set(){
 

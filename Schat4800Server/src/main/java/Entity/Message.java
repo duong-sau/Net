@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class Message implements Serializable {
     public boolean file=false;
+    public short call = 0;
+
     public int sourceId= 0;
     public int destinationId;
     public String message;

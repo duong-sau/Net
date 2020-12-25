@@ -12,17 +12,14 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
 public class CallSentThread extends Thread{
-    Connect connect;
+    AudioConnect audioConnect;
     TargetDataLine targetDataLine;
     DataLine.Info dataLineInfo;
     boolean running=true;
 
-    /**
-     * khởi tạo micro
-     * @param connect
-     */
-    public CallSentThread(Connect connect) {
-        this.connect = connect;
+
+    public CallSentThread(AudioConnect audioConnect) {
+       this.audioConnect = audioConnect;
         try {
             dataLineInfo = new DataLine.Info(TargetDataLine.class, Audio.audioFormat);
             if (!AudioSystem.isLineSupported(dataLineInfo)) {
@@ -46,12 +43,17 @@ public class CallSentThread extends Thread{
      */
     public void run() {
         try {
-            System.out.println("call start");
+            System.out.println("call start------");
                 while (running){
-                    Message message = new Message(SFrameController.roomId, "audio", 7);
-                    AudioTransfer audioTransfer = new AudioTransfer(targetDataLine.getBufferSize() / 5,getAudio());
-                    message.objects.add(audioTransfer);
-                    connect.writeMessage(message);
+                    if(SFrameController.hasPerson>0) {
+                        Message message = new Message(SFrameController.roomId, "audio", 7);
+                        AudioTransfer audioTransfer = new AudioTransfer(targetDataLine.getBufferSize() / 5, getAudio());
+                        message.objects.add(audioTransfer);
+                        audioConnect.writeMessage(message);
+                    }
+                    else {
+                        sleep(100);
+                    }
                 }
         }catch (Exception e){
             e.printStackTrace();
@@ -63,6 +65,8 @@ public class CallSentThread extends Thread{
         return bytes;
     }
     public void dispose(){
+        targetDataLine.stop();
+        targetDataLine.close();
         running=false;
     }
 }

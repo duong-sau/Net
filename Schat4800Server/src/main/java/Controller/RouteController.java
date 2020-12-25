@@ -3,6 +3,7 @@ package Controller;
  * lớp này nhiệm vụ chuyển tiếp tin nhắn từ máy này qua máy khác
  */
 
+import AudioServer.Connect.AudioThread;
 import Connect.ConnectThread;
 import Entity.Message;
 import Entity.Room;
@@ -25,7 +26,9 @@ public class RouteController {
      * @param message tin nhắn
      */
     public void routing(Message message){
-        sqlConnect.saveMessage(message);
+        if(message.command==0) {
+            sqlConnect.saveMessage(message);
+        }
         ArrayList<Integer> userIds=sqlConnect.getUser(new Room(message.destinationId));
         for (Integer userId:userIds) {
             for (ConnectThread connectThread : connectThreads) {
@@ -35,20 +38,25 @@ public class RouteController {
             }
         }
     }
+    public void set(AudioThread audioThread){
+        for (ConnectThread connectThread : connectThreads) {
+            if (connectThread.handshake.id == audioThread.handshake.id) {
+                connectThread.audioThread = audioThread;
+                audioThread.isSet = true;
+            }
+        }
+    }
+    public void requestRouting(Message message){
 
-    /**
-     * chuyển cuộc gọi
-     * @param message tin nhắn bên trong có đính kèm gói âm thanh
-     */
-    public void callRouting(Message message){
         ArrayList<Integer> userIds=sqlConnect.getUser(new Room(message.destinationId));
+        Message request = new Message(0,"call", 6);
         for (Integer userId:userIds) {
-            if (userId != message.destinationId) {
-                for (ConnectThread connectThread : connectThreads) {
-                    if (connectThread.handshake.id == userId) {
-                        connectThread.writeMessage(message);
-                    }
+            if (userId != message.sourceId) {
+            for (ConnectThread connectThread : connectThreads) {
+                if (connectThread.handshake.id == userId) {
+                    connectThread.writeMessage(request);
                 }
+            }
             }
         }
     }

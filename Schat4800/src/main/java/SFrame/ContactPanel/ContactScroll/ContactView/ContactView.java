@@ -23,7 +23,7 @@ public class ContactView extends JPanel {
     }
     private void set(){
        // setBackground(new Color(0, 10, 255,255));
-        setBorder(BorderFactory.createLineBorder(new Color(100, 255, 0,255)));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0,255)));
         setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
     }
 

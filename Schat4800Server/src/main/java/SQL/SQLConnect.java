@@ -10,9 +10,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class SQLConnect {
-    private static String url = "jdbc:mysql://remotemysql.com/CQfhezArNu";
-    private static String userName = "CQfhezArNu";
-    private static String password = "BvbPZxslEU";
+    private static String url = "jdbc:mysql://localhost:3306/Schat?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static String userName = "root";
+    private static String password = "";
     Connection connection;
     Statement statement;
 
@@ -101,17 +101,21 @@ public class SQLConnect {
      * @param sourceId id người tạo phòng(cũng sẽ được thêm vào phòng nên không cần có trong danh sách ở trên
      *
      */
-    public void createRoom(ArrayList<Integer> userIds, int sourceId){
+    public int  createRoom(ArrayList<Integer> userIds, int sourceId){
+        int roomId=-1;
             try {
                 String rID="";
                 for (Integer userId:userIds){
                     rID=rID.concat(String.valueOf(userId));
                 }
                 rID=rID.concat(String.valueOf(sourceId));
-               int roomId=Integer.parseInt(rID);
+               roomId=Integer.parseInt(rID);
                 System.out.println(roomId);
                 userIds.add(sourceId);
              for (Integer userId:userIds) {
+                 if (roomId == -1){
+                     return -1;
+                 }
                  System.out.println("tạo nhóm");
                  String query="INSERT INTO Room (id,userId) VALUE "+"("+(roomId)+","+userId+")";
                  statement.executeUpdate(query);
@@ -119,6 +123,7 @@ public class SQLConnect {
                 }catch (Exception e){
                 e.printStackTrace();
             }
+            return roomId;
     }
 
     /**

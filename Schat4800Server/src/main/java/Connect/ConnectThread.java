@@ -3,21 +3,28 @@ package Connect;
  * gói này nhận thông điệp từ client
  */
 
+import AudioServer.Connect.AudioThread;
 import Controller.RouteController;
 import Entity.*;
 import SQL.SQLConnect;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ConnectThread extends Thread{
+    long last = 0;
+    Random random= new Random();
+    int manifestLength = 1048576;
+    public AudioThread audioThread;
     boolean run=false;
     SQLConnect sqlConnect;
     public Handshake handshake;
-    Socket socket;
+    public Socket socket;
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
     public RouteController routeController;
+    FileMA fileConnect;
     public ConnectThread(Socket socket, RouteController routeController,SQLConnect sqlConnect) {
         this.socket = socket;
         this.sqlConnect=sqlConnect;
@@ -82,7 +89,16 @@ public class ConnectThread extends Thread{
     public Message readMessage(){
         try {
             Message message=(Message) objectInputStream.readObject();
+            if(handshake!=null){
+                message.sourceId=handshake.id;
+            }
             System.out.println("cẩn gửi tin nhắn đến "+message.destinationId+" nội dung"+message.message);
+            /*
+            int a = random.nextInt(10);
+            int b = (int) (System.currentTimeMillis()-last);
+            sleep(10000*a/b);
+
+             */
             return message;
 
         }catch (Exception e){
@@ -143,25 +159,39 @@ public class ConnectThread extends Thread{
     public void classify(Message message){
         if(message==null){}
         else if(message.command==0) {
+            message.sourceId=handshake.id;
             routeController.routing(message);
+            Message message1 = new Message(message.sourceId,"oke",1 );
+            writeMessage(message1);
         }
-        else if(message.command==1){
+        else if(message.command==209){
            readFile(message);
         }
+        else if(message.command==210){
+            readContent(message);
+        }
         else if(message.command==2){
-            writeFile(message);
+            manifest(message);
         }
         else if(message.command==3){
             createRoom(message);
         }
-        else if(message.command==5){
+        else if(message.command==110){
             System.out.println("call");
             requestCall(message);
         }
-        else if(message.command==6){
-
-        }else if(message.command==7){
-            routingCall(message);
+        else if(message.command==10){
+            createRoom(message);
+        }
+        else if(message.command==1220){
+            System.out.println("1220");
+            Message message1 = new Message(message.destinationId, "in", 1210);
+            routeController.routing(message1);
+        }
+        else if(message.command==1202){
+            System.out.println("1202");
+            Message message1 = new Message(message.destinationId, "in", 1201);
+            routeController.routing(message1);
         }
     }
 
@@ -170,14 +200,10 @@ public class ConnectThread extends Thread{
      * @param message
      */
     public void readFile(Message message){
-        //xong
         try {
-            FileTransfer fileTransfer=(FileTransfer)message.objects.get(0);
-            File file=new File(fileTransfer.name);
-            FileOutputStream fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(fileTransfer.content);
-            fileOutputStream.close();
-            Message message1=new Message(message.sourceId,message.destinationId,file.getName(),0);
+            Manifest manifest = (Manifest) message.objects.get(0);
+            fileConnect = new FileMA(manifest.name, manifest.length);
+            Message message1=new Message(handshake.id,message.destinationId,manifest.name,0);
             message1.file=true;
             routeController.routing(message1);
         }catch (Exception e){
@@ -185,29 +211,14 @@ public class ConnectThread extends Thread{
         }
 
     }
-
-    /**
-     * hàm này gửi file đến client khi có yêu cầu tải file
-     * @param message
-     */
-    public void writeFile(Message message){
-        //xong
-         try {
-             FileTransfer fileTransfer=new FileTransfer();
-             File file=new File(message.message);
-             FileInputStream fileInputStream=new FileInputStream(file);
-             fileTransfer.name=file.getName();
-             byte[] bytes = new byte[fileInputStream.available()];
-             fileInputStream.read(bytes);
-             fileTransfer.content=bytes;
-             fileInputStream.close();
-             Message message1=new Message(message.sourceId,"file from server",2);
-             message1.objects.add(fileTransfer);
-             writeMessage(message1);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void readContent(Message message){
+        FileTransfer fileTransfer=(FileTransfer)message.objects.get(0);
+        boolean finish = fileConnect.add(fileTransfer);
+        if (finish){
+            fileConnect = null;
         }
     }
+
 
     /**
      * hàm này tạo phòng chat
@@ -219,7 +230,16 @@ public class ConnectThread extends Thread{
         try {
             Room room=(Room) message.objects.get(0);
             System.out.println("nhận đươc người dùng"+room.userIds.get(0));
-            sqlConnect.createRoom(room.userIds,message.sourceId);
+            int id = sqlConnect.createRoom(room.userIds,message.sourceId);
+            Message message1=new Message(message.sourceId, "create oke", 11);
+            if(id!=-1) {
+                room.id = id;
+                message1.objects.add(room);
+            }
+            else {
+                message1.command=12;
+            }
+            writeMessage(message1);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -240,24 +260,68 @@ public class ConnectThread extends Thread{
      * @param message
      */
     public void requestCall(Message message){
-        RequestCall requestCall=new RequestCall(String.valueOf(message.sourceId),String.valueOf(message.sourceId));
-        Message request=new Message(message.sourceId,message.destinationId,"request call", 6);
-        request.objects.add(requestCall);
-        routeController.callRouting(message);
+        message.sourceId = handshake.id;
+        message.message="Call";
+        message.call=1;
+        message.file=false;
+        routeController.routing(message);
+       routeController.requestRouting(message);
+
     }
     public void responseCall(Message message){
 
+    }
+    public void manifest(Message message){
+
+        try {
+            File file=new File(message.message);
+            FileInputStream fileInputStream=new FileInputStream(file);
+            Manifest manifest = new Manifest(1+fileInputStream.available()/manifestLength,file.getName());
+            Message message1 = new Message(handshake.id, "manifest", 201);
+            message1.objects.add(manifest);
+            writeMessage(message1);
+            writeFile(manifest, message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    /**
+     * hàm này gửi file đến client khi có yêu cầu tải file
+     * @param message
+     */
+    public void writeFile(Manifest manifest, Message message){
+        //xong
+        try {
+            File file=new File(manifest.name);
+            FileInputStream fileInputStream=new FileInputStream(file);
+            for (int i = 0; i < manifest.length; i++) {
+                FileTransfer fileTransfer=new FileTransfer();
+                fileTransfer.id = i+1;
+                fileTransfer.name=file.getName();
+                if(fileInputStream.available()<manifestLength) {
+                    byte[] bytes = new byte[fileInputStream.available()];
+                    fileInputStream.read(bytes);
+                    fileTransfer.content = bytes;
+                }
+                else {
+                    byte[] bytes = new byte[manifestLength];
+                    fileInputStream.read(bytes);
+                    fileTransfer.content = bytes;
+                }
+                Message message1=new Message(message.sourceId,"file from server",2);
+                message1.objects.add(fileTransfer);
+                writeMessage(message1);
+            }
+            fileInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * hàm này chuyển tiếp tin nhắn có đính kèm nội dung âm thanh
      * @param message
      */
-    public void routingCall(Message message){
-        try {
-            routeController.callRouting(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 }

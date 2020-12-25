@@ -21,5 +21,6 @@ public class Contact extends JPanel {
     private void set(){
         setBorder(BorderFactory.createLineBorder(new Color(0x2428B6)));
         setPreferredSize(new Dimension(450,100));
+        setLayout(new FlowLayout());
     }
 }
